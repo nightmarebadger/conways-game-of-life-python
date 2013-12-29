@@ -17,9 +17,6 @@ up:
 | C                        | Clear the board                                    |
 | R                        | Record the current live fields (prints to console) |
 
-
-
-
 # Rules
 
 The universe of the Game of Life is an infinite two-dimensional orthogonal grid
