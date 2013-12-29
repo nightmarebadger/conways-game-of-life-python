@@ -83,3 +83,50 @@ class GameOfLife(object):
             drawing += "\n"
         drawing += "\n"
         print(drawing)
+
+# A blinker, which moves between two positions:
+#
+# XXX
+#
+# and
+#
+#  X
+#  X
+#  X
+#
+blinker = [(0, 1), (1, 1), (2, 1)]
+
+# A toad, which moves between two positions:
+#
+#  XXX
+# XXX
+#
+# and
+#
+#   X
+# X  X
+# X  X
+#  X
+#
+toad = [(0, 2), (1, 2), (2, 2),
+        (1, 1), (2, 1), (3, 1)]
+
+# A beacon, which moves between two positions:
+#
+# XX
+# XX
+#   XX
+#   XX
+#
+# and
+#
+# XX
+# X
+#    X
+#   XX
+#
+beacon = [(0, 0), (0, 1), (1, 0), (1, 1),
+          (2, 2), (2, 3), (3, 2), (3, 3)]
+
+game = GameOfLife(4, toad)
+game.play()
