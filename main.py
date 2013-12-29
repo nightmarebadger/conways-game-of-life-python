@@ -1,5 +1,9 @@
+from __future__ import division
+
 from numpy import array
-from time import sleep
+from pyglet.window import key
+
+import pyglet
 
 
 class GameOfLife(object):
@@ -63,27 +67,6 @@ class GameOfLife(object):
 
         self.game = self.game_new
 
-    def play(self):
-        count = 0
-        while(True):
-            print("Step", count)
-            self.draw()
-            self.step()
-            count += 1
-            sleep(1)
-
-    def draw(self):
-        drawing = ""
-        for j in range(self.size):
-            for i in range(self.size):
-                if self.game[i, j]:
-                    drawing += "X"
-                else:
-                    drawing += " "
-            drawing += "\n"
-        drawing += "\n"
-        print(drawing)
-
 # A blinker, which moves between two positions:
 #
 # XXX
@@ -128,5 +111,68 @@ toad = [(0, 2), (1, 2), (2, 2),
 beacon = [(0, 0), (0, 1), (1, 0), (1, 1),
           (2, 2), (2, 3), (3, 2), (3, 3)]
 
-game = GameOfLife(4, toad)
-game.play()
+game_window = pyglet.window.Window(
+    width=800,
+    height=800,
+    caption="Conway's Game of Life"
+)
+
+pyglet.gl.glClearColor(1, 1, 1, 1)
+
+n = 50
+
+game = GameOfLife(n, beacon)
+
+width = game_window.width
+height = game_window.height
+w = width // game.size
+h = height // game.size
+
+
+@game_window.event
+def on_draw():
+    game_window.clear()
+    for i in range(1, n):
+        pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
+            ('v2i', (i*w, 0,
+                     i*w, height)),
+            ('c3B', (0, 0, 0,
+                     0, 0, 0))
+        )
+
+        pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
+            ('v2i', (0, i*h,
+                     width, i*h)),
+            ('c3B', (0, 0, 0,
+                     0, 0, 0))
+        )
+
+    for j in range(game.size):
+        for i in range(game.size):
+            if game.game[i, j] == 1:
+                pyglet.graphics.draw_indexed(4, pyglet.gl.GL_TRIANGLES,
+                    [0, 1, 2, 0, 2, 3],
+                    ('v2i', (i*w, j*h,
+                             (i+1)*w-1, j*h,
+                             (i+1)*w-1, (j+1)*h-1,
+                             i*w, (j+1)*h-1)),
+                    ('c3B', (100, 100, 100,
+                             100, 100, 100,
+                             100, 100, 100,
+                             100, 100, 100))
+                )
+
+
+@game_window.event
+def on_key_press(symbol, modifiers):
+    if symbol == key.RIGHT:
+        game.step()
+
+
+def update(dt):
+    game.step()
+
+
+if __name__ == '__main__':
+    pyglet.clock.schedule_interval(update, 1/5)
+    pyglet.app.run()
