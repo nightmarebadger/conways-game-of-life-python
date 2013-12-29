@@ -67,6 +67,9 @@ class GameOfLife(object):
 
         self.game = self.game_new
 
+    def clear(self):
+        self.game = array([[0]*self.size]*self.size)
+
 # A blinker, which moves between two positions:
 #
 # XXX
@@ -109,7 +112,28 @@ toad = [(0, 2), (1, 2), (2, 2),
 #   XX
 #
 beacon = [(0, 0), (0, 1), (1, 0), (1, 1),
-          (2, 2), (2, 3), (3, 2), (3, 3)]
+          (2, 2), (2, 6), (3, 2), (3, 3)]
+
+glider = [(2, 0), (0, 1), (2, 1), (1, 2), (2, 2)]
+diehard = [(11, 19), (15, 19), (16, 19), (17, 19), (10, 20), (11, 20),
+           (16, 21)]
+
+lwss = [(1, 1), (2, 1), (3, 1), (4, 1), (0, 2), (4, 2), (4, 3), (0, 4), (3, 4)]
+random1 = [(18, 16), (19, 16), (20, 16), (21, 16), (16, 17), (17, 17),
+           (22, 17), (23, 17), (15, 18), (24, 18), (14, 19), (25, 19),
+           (13, 20), (16, 20), (18, 20), (20, 20), (22, 20), (26, 20),
+           (13, 21), (15, 21), (17, 21), (19, 21), (21, 21), (23, 21),
+           (26, 21), (13, 22), (26, 22), (13, 23), (26, 23), (13, 24),
+           (19, 24), (20, 24), (26, 24), (13, 25), (26, 25), (13, 26),
+           (19, 26), (20, 26), (26, 26), (13, 27), (26, 27), (13, 28),
+           (16, 28), (17, 28), (18, 28), (21, 28), (22, 28), (23, 28),
+           (26, 28), (13, 29), (16, 29), (18, 29), (21, 29), (23, 29),
+           (26, 29), (13, 30), (16, 30), (17, 30), (18, 30), (21, 30),
+           (22, 30), (23, 30), (26, 30), (13, 31), (26, 31), (13, 32),
+           (26, 32), (14, 33), (25, 33), (15, 34), (24, 34), (16, 35),
+           (17, 35), (22, 35), (23, 35), (18, 36), (19, 36), (20, 36),
+           (21, 36)]
+
 
 game_window = pyglet.window.Window(
     width=800,
@@ -121,7 +145,7 @@ pyglet.gl.glClearColor(1, 1, 1, 1)
 
 n = 50
 
-game = GameOfLife(n, beacon)
+game = GameOfLife(n, random1)
 
 width = game_window.width
 height = game_window.height
@@ -165,8 +189,40 @@ def on_draw():
 
 @game_window.event
 def on_key_press(symbol, modifiers):
+    global running
+    # Step
     if symbol == key.RIGHT:
         game.step()
+    # Run/pause
+    if symbol == key.SPACE:
+        if running:
+            pyglet.clock.unschedule(update)
+            running = False
+        else:
+            pyglet.clock.schedule_interval(update, 1/5)
+            running = True
+    # Clear
+    if symbol == key.C:
+        game.clear()
+    # "Record" (print current values)
+    if symbol == key.R:
+        tmp = []
+        for j in range(game.size):
+            for i in range(game.size):
+                if game.game[i, j] == 1:
+                    tmp.append((i, j))
+        print(tmp)
+
+
+@game_window.event
+def on_mouse_press(x, y, button, modifiers):
+    global w, h
+    i = x // w
+    j = y // h
+    if game.game[i, j] == 1:
+        game.game[i, j] = 0
+    else:
+        game.game[i, j] = 1
 
 
 def update(dt):
@@ -174,5 +230,5 @@ def update(dt):
 
 
 if __name__ == '__main__':
-    pyglet.clock.schedule_interval(update, 1/5)
+    running = False
     pyglet.app.run()
