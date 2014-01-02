@@ -40,3 +40,11 @@ seed—births and deaths occur simultaneously, and the discrete moment at which
 this happens is sometimes called a tick (in other words, each generation is a
 pure function of the preceding one). The rules continue to be applied
 repeatedly to create further generations.
+
+# Requirements
+
+I'm using numpy and pyglet (development version). The following commands should
+get you started:
+
+    pip install numpy
+    pip install --upgrade http://pyglet.googlecode.com/archive/tip.zip
